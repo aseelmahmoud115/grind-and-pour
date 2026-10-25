@@ -19,7 +19,8 @@ const CENTRE: Point = { x: 50, y: 50 };
  * "Brew Reveal": hovering the image (pointer), focusing the card link (keyboard),
  * or the card becoming the active one (touch) turns the bag into that coffee in a
  * cup, with a circle wipe from the entry point, a 3D tilt, steam, tasting notes and
- * an accent glow. Reduced motion gets a plain 200 ms crossfade.
+ * an accent glow. The cup photos already contain real steam, so the "steam" here
+ * is only a soft shimmer drifting over it. Reduced motion gets a plain 200 ms crossfade.
  *
  * Pointer events are read on the whole card (`card`), because the card's
  * stretched link covers the image; hits are tested against the image box.
@@ -159,18 +160,10 @@ export function BrewReveal({
         >
           {/* Lazy-loaded as the card nears the viewport, so the reveal never shows an empty frame. */}
           <Image src={product.cupImage} alt="" fill sizes={sizes} className="object-cover object-center" />
-          {!reduced && (
-            <motion.div
-              className="absolute inset-0"
-              style={{ background: `radial-gradient(circle at ${steam.x}% ${steam.y + 18}%, ${product.accent}, transparent 62%)` }}
-              initial={false}
-              animate={{ opacity: on ? 0.14 : 0 }}
-              transition={{ duration: on ? 0.8 : 0.45, ease: EASE_OUT }}
-            />
-          )}
+          {!reduced && <AccentGlow accent={product.accent} rim={steam} on={on} />}
         </motion.div>
 
-        <AnimatePresence>{on && !reduced && <Steam at={steam} />}</AnimatePresence>
+        <AnimatePresence>{on && !reduced && <SteamShimmer at={steam} />}</AnimatePresence>
 
         {!reduced && (
           <motion.div
@@ -190,39 +183,56 @@ export function BrewReveal({
   );
 }
 
-/** Three thin cream wisps rising over the rim, staggered by 180 ms, looping gently while revealed. */
-function Steam({ at }: { at: Point }) {
-  const paths = ["M20 58 C 12 46, 28 38, 20 26 S 14 10, 20 2", "M32 58 C 24 44, 40 36, 32 24 S 26 8, 32 2", "M44 58 C 36 46, 52 38, 44 26 S 38 10, 44 2"];
+/**
+ * Accent glow: a soft ring of the coffee's label colour around the cup body, with a
+ * clear centre so it reads as light behind the cup rather than a tint over it. The
+ * accent is mixed toward cream so dark labels (navy, near-black) still glow.
+ */
+function AccentGlow({ accent, rim, on }: { accent: string; rim: Point; on: boolean }) {
+  const tint = `color-mix(in oklab, ${accent} 60%, #f4eadb)`;
   return (
-    <motion.svg
+    <motion.div
+      className="absolute inset-0"
+      style={{
+        background: `radial-gradient(ellipse 46% 34% at ${rim.x}% ${rim.y + 13}%, transparent 50%, ${tint} 70%, transparent 100%)`,
+      }}
+      initial={false}
+      animate={{ opacity: on ? 0.5 : 0 }}
+      transition={{ duration: on ? 0.8 : 0.45, ease: EASE_OUT }}
+    />
+  );
+}
+
+/**
+ * The cup photos already show real steam; this only adds a subtle shimmer over it:
+ * two soft, blurred cream gradients that rise from the rim (`at`), drift up and fade
+ * on a 3.6 s loop, half a cycle apart. Transform and opacity only.
+ */
+function SteamShimmer({ at }: { at: Point }) {
+  return (
+    <motion.div
       aria-hidden="true"
-      viewBox="0 0 64 60"
-      fill="none"
-      className="pointer-events-none absolute w-[26%] -translate-x-1/2 -translate-y-full drop-shadow-[0_0_2px_rgb(42_26_18/0.35)]"
+      className="pointer-events-none absolute h-[26%] w-[24%] -translate-x-1/2 -translate-y-full"
       style={{ left: `${at.x}%`, top: `${at.y}%` }}
       initial={{ opacity: 1 }}
-      exit={{ opacity: 0, transition: { duration: 0.25 } }}
+      exit={{ opacity: 0, transition: { duration: 0.3 } }}
     >
-      {paths.map((d, i) => (
-        <motion.path
-          key={d}
-          d={d}
-          stroke="#F4EADB"
-          strokeWidth={2.2}
-          strokeLinecap="round"
-          initial={{ pathLength: 0, opacity: 0, y: 0 }}
-          animate={{ pathLength: [0, 1, 1], opacity: [0, 0.9, 0], y: [0, -10, -20] }}
+      {[0, 1].map((i) => (
+        <motion.div
+          key={i}
+          className="absolute inset-0 blur-[10px] will-change-transform"
+          style={{ background: "radial-gradient(ellipse 45% 60% at 50% 72%, rgb(244 234 219 / 0.75), transparent 70%)" }}
+          initial={{ opacity: 0, y: 0, scaleY: 0.9 }}
+          animate={{ opacity: [0, 0.6, 0], y: [0, -18], scaleY: [0.9, 1.15] }}
           transition={{
-            duration: 2.4,
-            times: [0, 0.5, 1],
-            ease: "easeOut",
-            delay: 0.55 + i * 0.18, // after the wipe
+            duration: 3.6,
+            ease: "easeInOut",
+            delay: 0.55 + i * 1.8, // after the wipe, then half a cycle apart
             repeat: Infinity,
-            repeatDelay: 0.35,
           }}
         />
       ))}
-    </motion.svg>
+    </motion.div>
   );
 }
 

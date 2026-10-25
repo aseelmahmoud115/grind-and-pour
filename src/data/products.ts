@@ -27,7 +27,11 @@ export type Product = {
    * Falls back to /images/cup.webp until the product's own file exists.
    */
   cupImage: string;
-  /** Where the steam rises from in the cup photo, in % of the image box. Default { x: 50, y: 38 }. */
+  /**
+   * Where the real steam rises in the cup photo, in % of the 3:4 image: x = the steam
+   * column, y = the top of the rim. Positions the steam shimmer and the accent glow.
+   * Default { x: 50, y: 38 }.
+   */
   steamAt?: { x: number; y: number };
   /** One line for cards. */
   short: string;
@@ -74,6 +78,7 @@ const coffee = (
 export const PRODUCTS: Product[] = [
   coffee({
     slug: "sage-morning",
+    steamAt: { x: 51, y: 48 },
     name: "Sage Morning",
     roast: "light",
     style: "single-origin",
@@ -95,6 +100,7 @@ export const PRODUCTS: Product[] = [
   }),
   coffee({
     slug: "terracotta-hearth",
+    steamAt: { x: 51, y: 48 },
     name: "Terracotta Hearth",
     roast: "medium",
     style: "single-origin",
@@ -116,6 +122,7 @@ export const PRODUCTS: Product[] = [
   }),
   coffee({
     slug: "sky-drift",
+    steamAt: { x: 53, y: 48 },
     name: "Sky Drift",
     roast: "light",
     style: "single-origin",
@@ -137,6 +144,7 @@ export const PRODUCTS: Product[] = [
   }),
   coffee({
     slug: "midnight-roast",
+    steamAt: { x: 52, y: 47 },
     name: "Midnight Roast",
     roast: "dark",
     style: "single-origin",
@@ -158,6 +166,7 @@ export const PRODUCTS: Product[] = [
   }),
   coffee({
     slug: "golden-hour",
+    steamAt: { x: 52, y: 48 },
     name: "Golden Hour",
     roast: "medium",
     style: "single-origin",
@@ -179,6 +188,7 @@ export const PRODUCTS: Product[] = [
   }),
   coffee({
     slug: "haraz-mocha",
+    steamAt: { x: 52, y: 49 },
     name: "Haraz Mocha",
     roast: "medium",
     style: "single-origin",
@@ -200,6 +210,7 @@ export const PRODUCTS: Product[] = [
   }),
   coffee({
     slug: "cardamom-qahwa",
+    steamAt: { x: 52, y: 49 },
     name: "Cardamom Qahwa",
     roast: "light",
     style: "arabic-turkish",
@@ -222,6 +233,7 @@ export const PRODUCTS: Product[] = [
   }),
   coffee({
     slug: "turkish-gold",
+    steamAt: { x: 52, y: 47 },
     name: "Turkish Gold",
     roast: "dark",
     style: "arabic-turkish",
@@ -244,6 +256,7 @@ export const PRODUCTS: Product[] = [
   }),
   coffee({
     slug: "velvet-shot",
+    steamAt: { x: 53, y: 48 },
     name: "Velvet Shot Espresso",
     roast: "dark",
     style: "blend",
@@ -265,6 +278,7 @@ export const PRODUCTS: Product[] = [
   }),
   coffee({
     slug: "night-owl-decaf",
+    steamAt: { x: 51, y: 48 },
     name: "Night Owl Decaf",
     roast: "medium",
     style: "decaf",
