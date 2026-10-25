@@ -106,18 +106,21 @@ export function Footer() {
             ))}
           </ul>
 
-          {/* 4. Bottom bar */}
-          <div className="mt-6 flex flex-col gap-5 text-sm text-cream/80 lg:flex-row lg:items-start lg:justify-between">
-            <div className="flex flex-col gap-3">
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-                <span>© 2026 Grind &amp; Pour</span>
-                <Link href="/privacy" className="inline-flex min-h-11 items-center hover:text-cream hover:underline underline-offset-4">
-                  Privacy
-                </Link>
-                <Link href="/terms" className="inline-flex min-h-11 items-center hover:text-cream hover:underline underline-offset-4">
-                  Terms
-                </Link>
-              </div>
+          {/* 4. Bottom bar. Stacked below lg (©, payments, socials); from lg one row:
+              payments + socials on the left, © · Privacy · Terms on the right. */}
+          <div className="mt-6 flex flex-col gap-3 text-sm text-cream/80 lg:flex-row lg:items-center lg:justify-between lg:gap-8">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 lg:order-2 lg:justify-end lg:gap-x-2">
+              <span>© 2026 Grind &amp; Pour</span>
+              <span aria-hidden="true" className="hidden lg:inline">·</span>
+              <Link href="/privacy" className="inline-flex min-h-11 items-center hover:text-cream hover:underline underline-offset-4">
+                Privacy
+              </Link>
+              <span aria-hidden="true" className="hidden lg:inline">·</span>
+              <Link href="/terms" className="inline-flex min-h-11 items-center hover:text-cream hover:underline underline-offset-4">
+                Terms
+              </Link>
+            </div>
+            <div className="flex flex-col gap-6 lg:order-1 lg:flex-row lg:items-center lg:gap-8">
               <ul aria-label="Payment methods (demo)" className="flex flex-wrap items-center gap-3 text-cream/85">
                 <li className="flex items-center gap-1.5">
                   <CreditCard className="size-5" strokeWidth={1.6} aria-hidden="true" />
@@ -128,12 +131,11 @@ export function Footer() {
                   Cash on delivery
                 </li>
               </ul>
+              {/* 5. Social */}
+              <div className="flex justify-center lg:justify-start">
+                <SocialIcons />
+              </div>
             </div>
-          </div>
-
-          {/* 5. Social */}
-          <div className="mt-6 flex justify-center lg:justify-start">
-            <SocialIcons />
           </div>
         </div>
       </div>
