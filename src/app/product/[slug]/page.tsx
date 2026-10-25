@@ -135,7 +135,13 @@ async function ProductDetails({ params }: { params: PageProps<"/product/[slug]">
 
       <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
         <div className="lg:sticky lg:top-[calc(var(--nav-h)+2rem)] lg:self-start">
-          <Gallery images={product.images} cupImage={product.cupImage} name={product.name} />
+          <Gallery
+            images={product.images}
+            cupImage={product.cupImage}
+            name={product.name}
+            steamAt={product.steamAt}
+            rimWidth={product.rimWidth}
+          />
         </div>
 
         <div>

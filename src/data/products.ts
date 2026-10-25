@@ -30,7 +30,7 @@ export type Product = {
   /**
    * Centre of the liquid surface in the cup photo, in % of the 3:4 image, where the
    * steam starts. Positions the steam emitter and the accent glow.
-   * Default { x: 50, y: 38 }.
+   * Default { x: 50, y: 53 }.
    */
   steamAt?: { x: number; y: number };
   /** Width of the steam emitter along the liquid surface, in % of the image width. Default 18. */

@@ -11,7 +11,8 @@ const onDisk = new Set(Object.values(imageManifest as Record<string, string[]>).
 
 /** Shared "in the cup" photo, used until a coffee's own cup.webp exists. */
 export const FALLBACK_CUP = "/images/cup.webp";
-export const DEFAULT_STEAM_AT = { x: 50, y: 38 };
+/** Liquid-surface centre for cup photos framed like ours (3:4, cup centred). */
+export const DEFAULT_STEAM_AT = { x: 50, y: 53 };
 
 /** Coffees with at least one photo, with their image lists trimmed to the files that exist. */
 export const CATALOG: Product[] = PRODUCTS.map((p) => ({

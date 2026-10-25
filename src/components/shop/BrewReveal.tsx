@@ -2,11 +2,12 @@
 
 import Image from "next/image";
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
-import { AnimatePresence, motion, useMotionTemplate, useMotionValue, useSpring } from "motion/react";
+import { motion, useMotionTemplate, useMotionValue, useSpring } from "motion/react";
 import type { Product } from "@/data/products";
 import { DEFAULT_STEAM_AT, tastingNotes } from "@/lib/catalog";
 import { useMediaQuery, usePrefersReducedMotion } from "@/lib/hooks";
 import { useActiveCard } from "./activeCard";
+import { SteamCanvas } from "./SteamCanvas";
 import { EASE_OUT, useCircleWipe, type Point } from "./useCircleWipe";
 
 const TILT_DEG = 6;
@@ -19,8 +20,9 @@ const CENTRE: Point = { x: 50, y: 50 };
  * "Brew Reveal": hovering the image (pointer), focusing the card link (keyboard),
  * or the card becoming the active one (touch) turns the bag into that coffee in a
  * cup, with a circle wipe from the entry point, a 3D tilt, steam, tasting notes and
- * an accent glow. The cup photos already contain real steam, so the "steam" here
- * is only a soft shimmer drifting over it. Reduced motion gets a plain 200 ms crossfade.
+ * an accent glow, and living canvas steam rising from the liquid (it sits inside the
+ * cup layer, so the wipe clips it). Reduced motion gets a plain 200 ms crossfade and
+ * keeps only the photo's own steam.
  *
  * Pointer events are read on the whole card (`card`), because the card's
  * stretched link covers the image; hits are tested against the image box.
@@ -160,10 +162,9 @@ export function BrewReveal({
         >
           {/* Lazy-loaded as the card nears the viewport, so the reveal never shows an empty frame. */}
           <Image src={product.cupImage} alt="" fill sizes={sizes} className="object-cover object-center" />
-          {!reduced && <AccentGlow accent={product.accent} rim={steam} on={on} />}
+          {!reduced && <AccentGlow accent={product.accent} surface={steam} on={on} />}
+          <SteamCanvas active={on && !reduced} at={steam} rimWidth={product.rimWidth} />
         </motion.div>
-
-        <AnimatePresence>{on && !reduced && <SteamShimmer at={steam} />}</AnimatePresence>
 
         {!reduced && (
           <motion.div
@@ -188,51 +189,18 @@ export function BrewReveal({
  * clear centre so it reads as light behind the cup rather than a tint over it. The
  * accent is mixed toward cream so dark labels (navy, near-black) still glow.
  */
-function AccentGlow({ accent, rim, on }: { accent: string; rim: Point; on: boolean }) {
+function AccentGlow({ accent, surface, on }: { accent: string; surface: Point; on: boolean }) {
   const tint = `color-mix(in oklab, ${accent} 60%, #f4eadb)`;
   return (
     <motion.div
       className="absolute inset-0"
       style={{
-        background: `radial-gradient(ellipse 46% 34% at ${rim.x}% ${rim.y + 13}%, transparent 50%, ${tint} 70%, transparent 100%)`,
+        background: `radial-gradient(ellipse 46% 34% at ${surface.x}% ${surface.y + 8}%, transparent 50%, ${tint} 70%, transparent 100%)`,
       }}
       initial={false}
       animate={{ opacity: on ? 0.5 : 0 }}
       transition={{ duration: on ? 0.8 : 0.45, ease: EASE_OUT }}
     />
-  );
-}
-
-/**
- * The cup photos already show real steam; this only adds a subtle shimmer over it:
- * two soft, blurred cream gradients that rise from the rim (`at`), drift up and fade
- * on a 3.6 s loop, half a cycle apart. Transform and opacity only.
- */
-function SteamShimmer({ at }: { at: Point }) {
-  return (
-    <motion.div
-      aria-hidden="true"
-      className="pointer-events-none absolute h-[26%] w-[24%] -translate-x-1/2 -translate-y-full"
-      style={{ left: `${at.x}%`, top: `${at.y}%` }}
-      initial={{ opacity: 1 }}
-      exit={{ opacity: 0, transition: { duration: 0.3 } }}
-    >
-      {[0, 1].map((i) => (
-        <motion.div
-          key={i}
-          className="absolute inset-0 blur-[10px] will-change-transform"
-          style={{ background: "radial-gradient(ellipse 45% 60% at 50% 72%, rgb(244 234 219 / 0.75), transparent 70%)" }}
-          initial={{ opacity: 0, y: 0, scaleY: 0.9 }}
-          animate={{ opacity: [0, 0.6, 0], y: [0, -18], scaleY: [0.9, 1.15] }}
-          transition={{
-            duration: 3.6,
-            ease: "easeInOut",
-            delay: 0.55 + i * 1.8, // after the wipe, then half a cycle apart
-            repeat: Infinity,
-          }}
-        />
-      ))}
-    </motion.div>
   );
 }
 

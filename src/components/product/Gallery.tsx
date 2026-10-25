@@ -3,7 +3,9 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
+import { SteamCanvas } from "@/components/shop/SteamCanvas";
 import { useCircleWipe } from "@/components/shop/useCircleWipe";
+import { DEFAULT_STEAM_AT } from "@/lib/catalog";
 import { usePrefersReducedMotion } from "@/lib/hooks";
 
 /**
@@ -11,7 +13,19 @@ import { usePrefersReducedMotion } from "@/lib/hooks";
  * photos) plus a "Bag / In the cup" toggle that reveals the cup with the same
  * circle wipe as the product cards (a crossfade under reduced motion).
  */
-export function Gallery({ images, cupImage, name }: { images: string[]; cupImage: string; name: string }) {
+export function Gallery({
+  images,
+  cupImage,
+  name,
+  steamAt = DEFAULT_STEAM_AT,
+  rimWidth,
+}: {
+  images: string[];
+  cupImage: string;
+  name: string;
+  steamAt?: { x: number; y: number };
+  rimWidth?: number;
+}) {
   const track = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
   const [inCup, setInCup] = useState(false);
@@ -72,6 +86,7 @@ export function Gallery({ images, cupImage, name }: { images: string[]; cupImage
           aria-hidden={!inCup}
         >
           <Image src={cupImage} alt={`${name}, brewed and served in a cup`} fill sizes="(min-width: 1024px) 45vw, 100vw" className="object-cover object-center" />
+          <SteamCanvas active={inCup && !reduced} at={steamAt} rimWidth={rimWidth} />
         </motion.div>
       </div>
 
