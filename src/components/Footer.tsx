@@ -1,0 +1,149 @@
+import Link from "next/link";
+import { Banknote, CreditCard, Flame, ShieldCheck, Truck } from "lucide-react";
+import { FooterColumn } from "@/components/footer/FooterColumn";
+import { Newsletter } from "@/components/footer/Newsletter";
+import { SocialIcons } from "@/components/footer/SocialIcons";
+
+const linkCls = "inline-flex min-h-11 items-center text-[15px] text-cream/85 transition-colors hover:text-cream hover:underline underline-offset-4";
+
+const SHOP = [
+  { href: "/shop", label: "All coffee" },
+  { href: "/shop?roast=light", label: "Light roasts" },
+  { href: "/shop?roast=dark", label: "Dark roasts" },
+  { href: "/shop?style=arabic-turkish", label: "Arabic & Turkish" },
+  { href: "/shop?style=decaf", label: "Decaf" },
+];
+const HELP = [
+  { href: "/shipping", label: "Shipping & delivery" },
+  { href: "/returns", label: "Returns & refunds" },
+  { href: "/faq", label: "FAQ" },
+  { href: "/orders", label: "Track my order" },
+  { href: "/contact", label: "Contact us" },
+];
+const ABOUT = [
+  { href: "/about", label: "Our story" },
+  { href: "/#grind", label: "Brew guide" },
+  { href: "/#ratios", label: "Brew ratios" },
+];
+
+const TRUST = [
+  { Icon: Flame, label: "Roasted to order" },
+  { Icon: Truck, label: "Free shipping over $40" },
+  { Icon: ShieldCheck, label: "Secure checkout (demo)" },
+];
+
+function Links({ items }: { items: { href: string; label: string }[] }) {
+  return (
+    <ul>
+      {items.map((l) => (
+        <li key={l.href}>
+          <Link href={l.href} className={linkCls}>
+            {l.label}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+export function Footer() {
+  return (
+    <footer className="bg-espresso text-cream">
+      {/* 1. Newsletter */}
+      <div className="border-b border-cream/15 px-5 py-14 sm:px-8 lg:px-14">
+        <div className="mx-auto flex max-w-6xl flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <p className="font-display text-3xl font-semibold sm:text-4xl">Fresh roasts, brew tips, and first dibs on new beans.</p>
+            <p className="mt-2 text-[15px] text-cream/80">One short email a month. Unsubscribe anytime.</p>
+          </div>
+          <Newsletter />
+        </div>
+      </div>
+
+      <div className="px-5 pt-10 pb-8 sm:px-8 lg:px-14 lg:pt-14">
+        <div className="mx-auto max-w-6xl">
+          {/* 2. Link columns */}
+          <div className="grid md:grid-cols-2 md:gap-x-10 md:gap-y-10 lg:grid-cols-4">
+            <FooterColumn title="Shop">
+              <Links items={SHOP} />
+              <p className="flex min-h-11 items-center gap-2">
+                <Link href="/shop" className={linkCls}>
+                  Gift cards
+                </Link>
+                <span className="eyebrow rounded-full bg-cream/15 px-2 py-1 text-[11px] text-cream">Coming soon</span>
+              </p>
+            </FooterColumn>
+            <FooterColumn title="Help">
+              <Links items={HELP} />
+            </FooterColumn>
+            <FooterColumn title="About">
+              <Links items={ABOUT} />
+            </FooterColumn>
+            <FooterColumn title="Contact">
+              <address className="space-y-2 pt-2 text-[15px] text-cream/85 not-italic md:pt-0">
+                <p>hello@grindandpour.demo</p>
+                <p>Cairo, Egypt</p>
+                <p>Sun–Thu 10:00–18:00</p>
+                <p className="text-sm text-cream/70">Demo brand: this inbox isn&apos;t monitored.</p>
+              </address>
+            </FooterColumn>
+          </div>
+
+          {/* 3. Trust row */}
+          <ul className="mt-10 grid gap-4 border-y border-cream/15 py-6 sm:grid-cols-3">
+            {TRUST.map(({ Icon, label }) => (
+              <li key={label} className="flex items-center gap-3 text-[15px] text-cream">
+                <Icon className="size-5 shrink-0 text-cream/80" strokeWidth={1.6} aria-hidden="true" />
+                {label}
+              </li>
+            ))}
+          </ul>
+
+          {/* 4. Bottom bar */}
+          <div className="mt-6 flex flex-col gap-5 text-sm text-cream/80 lg:flex-row lg:items-start lg:justify-between">
+            <div className="flex flex-col gap-3">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+                <span>© 2026 Grind &amp; Pour</span>
+                <Link href="/privacy" className="inline-flex min-h-11 items-center hover:text-cream hover:underline underline-offset-4">
+                  Privacy
+                </Link>
+                <Link href="/terms" className="inline-flex min-h-11 items-center hover:text-cream hover:underline underline-offset-4">
+                  Terms
+                </Link>
+              </div>
+              <ul aria-label="Payment methods (demo)" className="flex flex-wrap items-center gap-3 text-cream/85">
+                <li className="flex items-center gap-1.5">
+                  <CreditCard className="size-5" strokeWidth={1.6} aria-hidden="true" />
+                  Card
+                </li>
+                <li className="flex items-center gap-1.5">
+                  <Banknote className="size-5" strokeWidth={1.6} aria-hidden="true" />
+                  Cash on delivery
+                </li>
+              </ul>
+            </div>
+            <div className="flex flex-col gap-2 lg:items-end lg:text-right">
+              <p>
+                Demo project by <strong className="font-semibold text-cream">Aseel Alqedra</strong> ·{" "}
+                <a
+                  href="https://github.com/aseelmahmoud115"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex min-h-11 items-center text-cream underline underline-offset-4 hover:text-cream-light"
+                >
+                  github.com/aseelmahmoud115
+                </a>
+              </p>
+              <p className="text-xs text-cream/70">Visuals generated with AI. Layout inspired by a concept by Cool Vision Studio.</p>
+            </div>
+          </div>
+
+          {/* 5. Social */}
+          <div className="mt-6 flex justify-center lg:justify-start">
+            <SocialIcons />
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
