@@ -3,6 +3,7 @@ import { Banknote, CreditCard, Flame, ShieldCheck, Truck } from "lucide-react";
 import { FooterColumn } from "@/components/footer/FooterColumn";
 import { Newsletter } from "@/components/footer/Newsletter";
 import { SocialIcons } from "@/components/footer/SocialIcons";
+import { SITE } from "@/data/site";
 
 const linkCls = "inline-flex min-h-11 items-center text-[15px] text-cream/85 transition-colors hover:text-cream hover:underline underline-offset-4";
 
@@ -80,11 +81,17 @@ export function Footer() {
               <Links items={ABOUT} />
             </FooterColumn>
             <FooterColumn title="Contact">
-              <address className="space-y-2 pt-2 text-[15px] text-cream/85 not-italic md:pt-0">
-                <p>hello@grindandpour.demo</p>
-                <p>Cairo, Egypt</p>
-                <p>Sun–Thu 10:00–18:00</p>
-                <p className="text-sm text-cream/70">Demo brand: this inbox isn&apos;t monitored.</p>
+              <address className="space-y-1 pt-2 not-italic md:pt-0">
+                <p>
+                  <a href={`mailto:${SITE.email}`} className={linkCls}>
+                    {SITE.email}
+                  </a>
+                </p>
+                <p>
+                  <a href={SITE.website.href} target="_blank" rel="noopener noreferrer" className={linkCls}>
+                    {SITE.website.label}
+                  </a>
+                </p>
               </address>
             </FooterColumn>
           </div>
@@ -121,20 +128,6 @@ export function Footer() {
                   Cash on delivery
                 </li>
               </ul>
-            </div>
-            <div className="flex flex-col gap-2 lg:items-end lg:text-right">
-              <p>
-                Demo project by <strong className="font-semibold text-cream">Aseel Alqedra</strong> ·{" "}
-                <a
-                  href="https://github.com/aseelmahmoud115"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex min-h-11 items-center text-cream underline underline-offset-4 hover:text-cream-light"
-                >
-                  github.com/aseelmahmoud115
-                </a>
-              </p>
-              <p className="text-xs text-cream/70">Visuals generated with AI. Layout inspired by a concept by Cool Vision Studio.</p>
             </div>
           </div>
 

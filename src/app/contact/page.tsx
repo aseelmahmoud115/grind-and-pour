@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ContactForm } from "@/components/forms/ContactForm";
 import { PageHeader, PageMain } from "@/components/PageHeader";
+import { SITE } from "@/data/site";
 
 export const metadata: Metadata = { title: "Contact us", description: "Get in touch with Grind & Pour (demo store)." };
 
@@ -15,11 +16,17 @@ export default function ContactPage() {
       <div className="mt-10 grid gap-12 lg:grid-cols-[1fr_20rem]">
         <ContactForm />
         <address className="space-y-2 text-[16px] text-espresso not-italic">
-          <p className="eyebrow text-roast">Roastery</p>
-          <p>Cairo, Egypt</p>
-          <p>Sun–Thu 10:00–18:00</p>
-          <p>hello@grindandpour.demo</p>
-          <p className="text-sm text-roast">A demo address: this inbox isn&apos;t monitored.</p>
+          <p className="eyebrow text-roast">Contact</p>
+          <p>
+            <a href={`mailto:${SITE.email}`} className="underline underline-offset-4 hover:text-roast">
+              {SITE.email}
+            </a>
+          </p>
+          <p>
+            <a href={SITE.website.href} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 hover:text-roast">
+              {SITE.website.label}
+            </a>
+          </p>
         </address>
       </div>
     </PageMain>
