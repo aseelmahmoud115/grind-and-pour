@@ -1,32 +1,42 @@
 {
   "cardamom-qahwa": [
-    "/images/products/cardamom-qahwa/1.webp"
+    "/images/products/cardamom-qahwa/1.webp",
+    "/images/products/cardamom-qahwa/cup.webp"
   ],
   "golden-hour": [
-    "/images/products/golden-hour/1.webp"
+    "/images/products/golden-hour/1.webp",
+    "/images/products/golden-hour/cup.webp"
   ],
   "haraz-mocha": [
-    "/images/products/haraz-mocha/1.webp"
+    "/images/products/haraz-mocha/1.webp",
+    "/images/products/haraz-mocha/cup.webp"
   ],
   "midnight-roast": [
-    "/images/products/midnight-roast/1.webp"
+    "/images/products/midnight-roast/1.webp",
+    "/images/products/midnight-roast/cup.webp"
   ],
   "night-owl-decaf": [
-    "/images/products/night-owl-decaf/1.webp"
+    "/images/products/night-owl-decaf/1.webp",
+    "/images/products/night-owl-decaf/cup.webp"
   ],
   "sage-morning": [
-    "/images/products/sage-morning/1.webp"
+    "/images/products/sage-morning/1.webp",
+    "/images/products/sage-morning/cup.webp"
   ],
   "sky-drift": [
-    "/images/products/sky-drift/1.webp"
+    "/images/products/sky-drift/1.webp",
+    "/images/products/sky-drift/cup.webp"
   ],
   "terracotta-hearth": [
-    "/images/products/terracotta-hearth/1.webp"
+    "/images/products/terracotta-hearth/1.webp",
+    "/images/products/terracotta-hearth/cup.webp"
   ],
   "turkish-gold": [
-    "/images/products/turkish-gold/1.webp"
+    "/images/products/turkish-gold/1.webp",
+    "/images/products/turkish-gold/cup.webp"
   ],
   "velvet-shot": [
-    "/images/products/velvet-shot/1.webp"
+    "/images/products/velvet-shot/1.webp",
+    "/images/products/velvet-shot/cup.webp"
   ]
 }
