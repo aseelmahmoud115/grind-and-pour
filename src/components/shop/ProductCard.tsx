@@ -31,7 +31,8 @@ export function ProductCard({ product, sizes, priority = false }: { product: Pro
   return (
     <article ref={setCard} className="group relative flex h-full flex-col rounded-3xl bg-cream-light p-2.5 sm:p-3 shadow-[0_24px_48px_-24px_rgb(42_26_18/0.35)] transition-transform duration-300 ease-out hover:-translate-y-1">
       <BrewReveal product={product} card={card} sizes={sizes} priority={priority}>
-        {soldOut && <SoldOutBadge className="absolute top-3 left-3" />}
+        {/* Top right: the first tasting-note pill sits top left during the reveal. */}
+        {soldOut && <SoldOutBadge className="absolute top-3 right-3 z-10" />}
       </BrewReveal>
       <div className="flex flex-1 flex-col px-1.5 pt-4 pb-1.5 sm:px-2">
         <p className="eyebrow inline-flex items-center gap-2 text-[11px] text-roast sm:text-[12px]">
