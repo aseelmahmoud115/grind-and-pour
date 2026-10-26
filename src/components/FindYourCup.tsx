@@ -15,7 +15,10 @@ import { CATALOG } from "@/lib/catalog";
 const FEATURED = CATALOG.slice(0, 3);
 const MORE = CATALOG.slice(3);
 const AREAS = ["card-a", "card-b", "card-c"];
-const CARD_SIZES = "(min-width: 1024px) 19rem, (min-width: 768px) 45vw, 80vw";
+/** Card image widths: the slide (80% / 45% of the track) or the 19rem lg card, minus the card padding. */
+const CARD_SIZES = "(min-width: 1024px) 17.5rem, (min-width: 768px) calc(45vw - 3.3rem), (min-width: 640px) calc(80vw - 4.7rem), calc(80vw - 3.2rem)";
+/** A quarter of the max-w-7xl, px-14 track (less three 1rem gaps), minus the card padding. */
+const MORE_SIZES = "(min-width: 1280px) 16rem, calc(25vw - 4rem)";
 
 export function FindYourCup() {
   return (
@@ -74,7 +77,7 @@ export function FindYourCup() {
             trackClassName="-mx-2 scroll-px-2 px-2 pt-2 pb-8"
           >
             {MORE.map((p) => (
-              <ProductCard key={p.slug} product={p} sizes="22vw" />
+              <ProductCard key={p.slug} product={p} sizes={MORE_SIZES} />
             ))}
           </Carousel>
         </div>

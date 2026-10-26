@@ -2,11 +2,11 @@
 
 import { useId, useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { lazyZodResolver } from "@/lib/lazyResolver";
 
-const schema = z.object({ email: z.email("Enter a valid email address, like name@example.com.") });
-type Values = z.infer<typeof schema>;
+type Values = { email: string };
+// zod loads on the first validation, not with every page's footer.
+const resolver = lazyZodResolver<Values>(() => import("./newsletterSchema").then((m) => m.newsletterSchema));
 
 /**
  * Validates and confirms on the page only; nothing is sent anywhere.
@@ -20,7 +20,7 @@ export function Newsletter() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<Values>({ resolver: zodResolver(schema), mode: "onTouched" });
+  } = useForm<Values>({ resolver, mode: "onTouched" });
   const error = errors.email?.message;
 
   if (done) {

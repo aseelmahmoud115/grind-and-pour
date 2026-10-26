@@ -1,12 +1,14 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { ReactLenis, useLenis } from "lenis/react";
+import type Lenis from "lenis";
 import { usePrefersReducedMotion } from "@/lib/hooks";
 
 // allowNestedScroll: wheel/touch over a nested scroller (carousel, drawer) that can move in that
 // direction scrolls the nested element natively; otherwise Lenis scrolls the page.
-const LENIS_OPTIONS = { lerp: 0.09, smoothWheel: true, allowNestedScroll: true };
+// autoRaf off: <LenisControls> runs Lenis's frame loop only while a smooth scroll is in flight.
+const LENIS_OPTIONS = { lerp: 0.09, smoothWheel: true, allowNestedScroll: true, autoRaf: false };
 const ANCHOR_DURATION = 1.4;
 
 /**
@@ -22,9 +24,40 @@ export function SmoothScroll() {
   return (
     <>
       <ReactLenis root options={LENIS_OPTIONS} />
-      <AnchorLinks />
+      <LenisControls />
     </>
   );
+}
+
+/**
+ * Drives Lenis on demand: a wheel gesture (Lenis's "virtual-scroll") or a
+ * programmatic scrollTo starts a rAF loop that stops as soon as Lenis settles,
+ * so an idle page runs no frame loop at all. Returns the wake-up call.
+ */
+function useLenisDriver(lenis: Lenis | undefined) {
+  const wake = useRef(() => {});
+
+  useEffect(() => {
+    if (!lenis) return;
+    let raf = 0;
+    const tick = (now: number) => {
+      lenis.raf(now);
+      raf = lenis.isScrolling === "smooth" ? requestAnimationFrame(tick) : 0;
+    };
+    wake.current = () => {
+      if (raf) return;
+      lenis.time = 0; // the first step after idle advances by 0, not by the whole idle gap
+      raf = requestAnimationFrame(tick);
+    };
+    const off = lenis.on("virtual-scroll", () => wake.current());
+    return () => {
+      off();
+      cancelAnimationFrame(raf);
+      wake.current = () => {};
+    };
+  }, [lenis]);
+
+  return wake;
 }
 
 /**
@@ -33,8 +66,9 @@ export function SmoothScroll() {
  * and only calls preventDefault, so a next/link still runs its own onClick (e.g.
  * closing the menu) but skips its instant jump.
  */
-function AnchorLinks() {
+function LenisControls() {
   const lenis = useLenis();
+  const wake = useLenisDriver(lenis);
 
   useEffect(() => {
     if (!lenis) return;
@@ -50,6 +84,7 @@ function AnchorLinks() {
       // Lenis already honours the target's scroll-margin-top (the navbar clearance on
       // #ratios and #beans), so no extra offset is needed here.
       lenis.scrollTo(target, { offset: 0, duration: ANCHOR_DURATION });
+      wake.current();
       history.pushState(null, "", `#${id}`);
       // Keep keyboard focus with the content, as a native anchor jump would.
       if (target.getAttribute("aria-hidden") !== "true") {
@@ -59,7 +94,7 @@ function AnchorLinks() {
     };
     document.addEventListener("click", onClick, true);
     return () => document.removeEventListener("click", onClick, true);
-  }, [lenis]);
+  }, [lenis, wake]);
 
   return null;
 }

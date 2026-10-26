@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Banknote, Check, ChevronDown, CreditCard, Info, LoaderCircle } from "lucide-react";
 import { SelectField, TextField } from "@/components/forms/Field";
 import { useCartView } from "@/components/shop/cart-hooks";
@@ -14,16 +13,12 @@ import { DELIVERY, formatCents, shippingCents, totals, type DeliveryMethod } fro
 import { useCart } from "@/store/cart";
 import { newOrderId, useOrders, type Order } from "@/store/orders";
 import { useUi } from "@/store/ui";
-import {
-  cardSchema,
-  COUNTRIES,
-  EMPTY_CARD,
-  formatExpiry,
-  shippingSchema,
-  spaceCardNumber,
-  type CardValues,
-  type ShippingValues,
-} from "./schemas";
+import { lazyZodResolver } from "@/lib/lazyResolver";
+import { COUNTRIES, EMPTY_CARD, formatExpiry, spaceCardNumber } from "./format";
+import type { CardValues, ShippingValues } from "./schemas";
+
+const shippingResolver = lazyZodResolver<ShippingValues>(() => import("./schemas").then((m) => m.shippingSchema));
+const cardResolver = lazyZodResolver<CardValues>(() => import("./schemas").then((m) => m.cardSchema));
 
 const STEPS = ["Contact & shipping", "Delivery", "Payment"] as const;
 const PROCESSING_MS = 1500;
@@ -91,11 +86,11 @@ export function CheckoutView() {
   const firstRender = useRef(true);
 
   const shippingForm = useForm<ShippingValues>({
-    resolver: zodResolver(shippingSchema),
+    resolver: shippingResolver,
     mode: "onTouched",
     defaultValues: { country: "Egypt" },
   });
-  const cardForm = useForm<CardValues>({ resolver: zodResolver(cardSchema), mode: "onTouched", defaultValues: EMPTY_CARD });
+  const cardForm = useForm<CardValues>({ resolver: cardResolver, mode: "onTouched", defaultValues: EMPTY_CARD });
 
   // Move focus to the new step's heading so keyboard and screen-reader users land in the right place.
   useEffect(() => {

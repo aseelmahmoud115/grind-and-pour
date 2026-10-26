@@ -141,7 +141,7 @@ export function ShopGrid({
         <ul className="mt-5 grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 lg:grid-cols-4 lg:gap-6">
           {results.map((p, i) => (
             <li key={p.slug}>
-              <ProductCard product={p} priority={i < 4} sizes="(min-width: 1024px) 22vw, (min-width: 768px) 30vw, 46vw" />
+              <ProductCard product={p} priority={i < 4} sizes="(min-width: 1392px) 17.4rem, (min-width: 1024px) calc(25vw - 4.4rem), (min-width: 768px) calc(33.3vw - 3.7rem), (min-width: 640px) calc(50vw - 4.1rem), calc(50vw - 2.9rem)" />
             </li>
           ))}
         </ul>
