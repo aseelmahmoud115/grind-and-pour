@@ -32,6 +32,29 @@ export function usePrefersReducedMotion() {
   );
 }
 
+type NetworkInformation = { saveData?: boolean; effectiveType?: string };
+const SLOW_NETWORKS = new Set(["slow-2g", "2g", "3g"]);
+const noSubscribe = () => () => {};
+let lowData: boolean | undefined;
+
+function readLowData() {
+  const c = (navigator as Navigator & { connection?: NetworkInformation }).connection;
+  return !!c && (c.saveData === true || SLOW_NETWORKS.has(c.effectiveType ?? ""));
+}
+
+/**
+ * Data saver on, or a 3G-or-slower connection (Network Information API; false where
+ * it's unsupported). Read once per page load: effectiveType drifts with signal, and
+ * flipping the film's mode mid-visit would change the page height under the reader.
+ */
+export function useLowData() {
+  return useSyncExternalStore(
+    noSubscribe,
+    () => (lowData ??= readLowData()),
+    () => false,
+  );
+}
+
 /*
  * Navbar height, measured with a ResizeObserver in <Navbar>. Published as the
  * CSS variable --nav-h (for layout) and here (for JS-positioned UI like callouts).

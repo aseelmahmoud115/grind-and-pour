@@ -10,11 +10,12 @@ import { clipRect, frameAt } from "@/lib/timeline";
 import { LINE_STAGGER, SUPPORT_DELAY, useSceneRange } from "./choreography";
 
 /**
- * Callout anchors in frame-space px (1248×704), measured on 2-exploded frames
- * 1, 96 and 192. The parts drift upward as the grinder separates, so anchors
- * are interpolated between those keyframes.
+ * Callout anchors in source frame px (1248×704), measured on 2-exploded frames
+ * 1, 96 and 192 of the original 192-frame clip (frames 1, ≈60 and 120 now). The
+ * parts drift upward as the grinder separates, so anchors are interpolated
+ * between those keyframes.
  */
-const KEYFRAMES = [0, 95, 191];
+const KEYFRAMES = [0, 59.2, 119];
 const CALLOUTS = [
   { label: "Hopper", x: [708, 706, 700], y: [100, 50, 22] },
   { label: "Burr set", x: [668, 668, 668], y: [275, 215, 160] },
@@ -37,7 +38,7 @@ function interp(frame: number, values: number[]) {
 const EXPLODED = 1;
 
 function Callout({ index }: { index: number }) {
-  const { film, position, size, reduced, tl } = useFilm();
+  const { film, position, size, reduced, tl, set } = useFilm();
   const dial = useSceneRange(EXPLODED);
   const c = CALLOUTS[index];
   const x = useMotionValue(0);
@@ -49,16 +50,16 @@ function Callout({ index }: { index: number }) {
   useEffect(() => {
     const update = (v: number) => {
       const frame = frameAt(tl, EXPLODED, v);
-      const r = clipRect(tl, EXPLODED, v, size.w, size.h);
+      const r = clipRect(tl, set, EXPLODED, v, size.w, size.h);
       const top = r.y + interp(frame, c.y) * r.scale;
-      x.set(r.x + interp(frame, c.x) * r.scale);
+      x.set(r.x + (interp(frame, c.x) - set.originX[EXPLODED]) * r.scale);
       y.set(top);
       // Fade out as the anchor drifts up under the navbar.
       clear.set(Math.min(1, Math.max(0, (top - navClearance) / 24)));
     };
     update(position.get());
     return position.on("change", update);
-  }, [position, size, tl, c, x, y, clear, navClearance]);
+  }, [position, size, tl, set, c, x, y, clear, navClearance]);
 
   return (
     <motion.div className={`absolute top-0 left-0 will-change-transform ${c.className ?? ""}`} style={{ x, y, opacity: clear }}>
