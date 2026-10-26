@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { MOBILE_QUERY } from "@/lib/frames";
 
 const STEPS = [
   { id: "grind", label: "Grind" },
@@ -17,6 +18,8 @@ export function StepIndicator() {
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
+    // Never shown on phones: no work there on every scroll frame.
+    if (window.matchMedia(MOBILE_QUERY).matches) return;
     let raf = 0;
     const update = () => {
       raf = 0;

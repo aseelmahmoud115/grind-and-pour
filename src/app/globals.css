@@ -13,9 +13,9 @@
   --terracotta: #b4572f;
   --sage: #93a88a;
   --sky: #a7c4e2;
-  /* Phone film frame (576 × 564) drawn at the viewport's width, centred at 40% of the stage. */
-  --film-frame-h: calc(100vw * 564 / 576);
-  /* Its lowest bottom edge: half its height at the strongest push (×1.03, ×1.02 more in a crossfade). */
+  /* Phone film video (720 × 704) shown at the viewport's width, centred at 40% of the stage. */
+  --film-frame-h: calc(100vw * 704 / 720);
+  /* Its bottom edge, plus the same clearance the frame film's strongest camera push needed. */
   --film-bottom: calc(40dvh + var(--film-frame-h) * 0.53);
 }
 
@@ -141,15 +141,15 @@ body {
 }
 
 /*
- * Phones: the film stage's poster is clip 1's first phone frame, placed exactly like
- * the canvas draws it (full width, centred at 40%, edges fading into the cream).
+ * Phones: the film stage's poster is scene 1's video poster, placed exactly like
+ * <PhoneFilm> shows the video (full width, centred at 40%, edges fading into the cream).
  * !important beats the desktop poster set inline on the stage.
  */
 @utility film-stage {
   @variant phone {
     background-image:
       linear-gradient(to bottom, var(--cream), rgb(234 216 191 / 0) 12%, rgb(234 216 191 / 0) 88%, var(--cream)),
-      url(/frames/v3/mobile/1-grind/0001.webp) !important;
+      url(/videos/mobile/1-grind-poster.webp) !important;
     background-size: 100% var(--film-frame-h) !important;
     background-position: center calc(40dvh - var(--film-frame-h) / 2) !important;
     background-repeat: no-repeat;

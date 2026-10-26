@@ -1,4 +1,4 @@
-import { FRAME_COUNT, coverRect, fitWidthRect } from "./frames";
+import { FRAME_COUNT, coverRect } from "./frames";
 
 /**
  * The film: four clips played back to back on one pinned stage. All positions
@@ -25,6 +25,9 @@ export const CLIPS: ClipDef[] = [
   { dir: "4-sip", focalX: 0.5, weightVh: 240, still: 96 },
 ];
 
+/** Phones play each scene as a video instead of scrubbing it, so a scene needs much less scroll. */
+export const PHONE_SCENE_VH = 130;
+
 export type Timeline = {
   reduced: boolean;
   /** Crossfade length at each clip boundary. */
@@ -39,12 +42,12 @@ export type Timeline = {
   spans: { from: number; to: number }[];
 };
 
-export function makeTimeline(reduced: boolean): Timeline {
+export function makeTimeline(reduced: boolean, phone = false): Timeline {
   const crossfade = reduced ? 20 : 40;
   const fadeOut = reduced ? 20 : 30;
   let at = 0;
   const segments = CLIPS.map((c) => {
-    const weight = reduced ? 100 : c.weightVh;
+    const weight = reduced ? 100 : phone ? PHONE_SCENE_VH : c.weightVh;
     const segment = { start: at, end: at + weight };
     at += weight;
     return segment;
@@ -72,17 +75,11 @@ export function clipProgress(tl: Timeline, i: number, v: number) {
 
 /**
  * Float frame position (0-based, not rounded) of clip `i` at timeline position `v`.
- * `count` is the clip's frame count (192 on desktop, 120 for the phone frames).
+ * `count` is the clip's frame count.
  */
 export function frameAt(tl: Timeline, i: number, v: number, count = FRAME_COUNT) {
   if (tl.reduced) return Math.round(((CLIPS[i].still - 1) * (count - 1)) / (FRAME_COUNT - 1));
   return clipProgress(tl, i, v) * (count - 1);
-}
-
-/** Timeline position (vh) where clip `i` shows frame `frame` of `count`. */
-export function frameVh(tl: Timeline, i: number, frame: number, count = FRAME_COUNT) {
-  const { from, to } = tl.spans[i];
-  return from + (frame / (count - 1)) * (to - from);
 }
 
 /** Frames advanced per vh of scroll at `v` (the fastest of the clips playing there). */
@@ -116,9 +113,14 @@ export function layersAt(tl: Timeline, v: number, count = FRAME_COUNT): { layers
       };
     }
   }
-  const index = tl.segments.findIndex((s) => v < s.end);
-  const clip = index === -1 ? n - 1 : index;
+  const clip = sceneIndexAt(tl, v);
   return { layers: [{ clip, frame: frameAt(tl, clip, v, count), alpha: 1, push: 1 }], fade };
+}
+
+/** The scene in view at `v`: the one whose own segment contains it (the last one past the end). */
+export function sceneIndexAt(tl: Timeline, v: number) {
+  const index = tl.segments.findIndex((s) => v < s.end);
+  return index === -1 ? tl.segments.length - 1 : index;
 }
 
 /**
@@ -132,26 +134,6 @@ export function clipRect(tl: Timeline, i: number, v: number, cw: number, ch: num
   const s = (1 + 0.06 * e) * push;
   const fx = r.x + CLIPS[i].focalX * r.w;
   const fy = ch / 2;
-  return {
-    x: fx - (fx - r.x) * s,
-    y: fy - (fy - r.y) * s - 0.015 * ch * e,
-    w: r.w * s,
-    h: r.h * s,
-    scale: r.scale * s,
-  };
-}
-
-/**
- * Phone version of clipRect: the frame at the stage's full width (centred at 40% of
- * its height, on cream), with the same eased camera push and drift at half strength
- * (×1.00 → ×1.03), scaled around the frame's centre.
- */
-export function mobileRect(tl: Timeline, i: number, v: number, cw: number, ch: number, push = 1) {
-  const r = fitWidthRect(cw, ch);
-  const e = (tl.reduced ? 0 : easeInOutCubic(clipProgress(tl, i, v))) / 2;
-  const s = (1 + 0.06 * e) * (1 + (push - 1) / 2);
-  const fx = r.x + r.w / 2;
-  const fy = r.y + r.h / 2;
   return {
     x: fx - (fx - r.x) * s,
     y: fy - (fy - r.y) * s - 0.015 * ch * e,
