@@ -1,4 +1,4 @@
-import { FRAME_COUNT, SOURCE_H, SOURCE_W, coverRect, type FrameSet } from "./frames";
+import { FRAME_COUNT, coverRect } from "./frames";
 
 /**
  * The film: four clips played back to back on one pinned stage. All positions
@@ -6,7 +6,7 @@ import { FRAME_COUNT, SOURCE_H, SOURCE_W, coverRect, type FrameSet } from "./fra
  */
 export type ClipDef = {
   dir: string;
-  /** Horizontal position of the main subject, as a fraction of the source (desktop) frame width. */
+  /** Horizontal position of the main subject, as a fraction of frame width. */
   focalX: number;
   /** Scroll length of the clip's own segment. */
   weightVh: number;
@@ -19,34 +19,11 @@ export type ClipDef = {
  * ~1.4–1.7 frames per 60 Hz tick, so the film rarely has to hold back.
  */
 export const CLIPS: ClipDef[] = [
-  { dir: "1-grind", focalX: 0.69, weightVh: 280, still: 120 },
-  { dir: "2-exploded", focalX: 0.5, weightVh: 230, still: 60 },
-  { dir: "3-pour", focalX: 0.57, weightVh: 280, still: 60 },
-  { dir: "4-sip", focalX: 0.5, weightVh: 240, still: 60 },
+  { dir: "1-grind", focalX: 0.69, weightVh: 280, still: 192 },
+  { dir: "2-exploded", focalX: 0.5, weightVh: 230, still: 96 },
+  { dir: "3-pour", focalX: 0.57, weightVh: 280, still: 96 },
+  { dir: "4-sip", focalX: 0.5, weightVh: 240, still: 96 },
 ];
-
-const MOBILE_W = 512;
-
-/**
- * Desktop: the full 1248 × 704 frames. Mobile (portrait phones): 512 × 704 crops
- * centred on each clip's subject, so the subject is at 0.5 in every clip.
- */
-export const FRAME_SETS: Record<FrameSet["id"], FrameSet> = {
-  desktop: {
-    id: "desktop",
-    w: SOURCE_W,
-    h: SOURCE_H,
-    focalX: CLIPS.map((c) => c.focalX),
-    originX: CLIPS.map(() => 0),
-  },
-  mobile: {
-    id: "mobile",
-    w: MOBILE_W,
-    h: SOURCE_H,
-    focalX: CLIPS.map(() => 0.5),
-    originX: CLIPS.map((c) => Math.round(c.focalX * SOURCE_W - MOBILE_W / 2)),
-  },
-};
 
 export type Timeline = {
   reduced: boolean;
@@ -58,7 +35,7 @@ export type Timeline = {
   length: number;
   /** Each clip's own segment. */
   segments: { start: number; end: number }[];
-  /** Scroll range that plays frames 1 → 120 (segment plus half of each neighbouring crossfade). */
+  /** Scroll range that plays frames 1 → 192 (segment plus half of each neighbouring crossfade). */
   spans: { from: number; to: number }[];
 };
 
@@ -107,12 +84,6 @@ export function framesPerVh(tl: Timeline, v: number) {
   return rate;
 }
 
-/** Timeline position (vh) where clip `i` shows frame `frame`. */
-export function frameVh(tl: Timeline, i: number, frame: number) {
-  const { from, to } = tl.spans[i];
-  return from + (frame / (FRAME_COUNT - 1)) * (to - from);
-}
-
 export type Layer = { clip: number; frame: number; alpha: number; push: number };
 
 /** What to draw at `v`: one clip, or two while crossfading, plus the closing fade to cream. */
@@ -141,16 +112,15 @@ export function layersAt(tl: Timeline, v: number): { layers: Layer[]; fade: numb
 }
 
 /**
- * Screen rect for clip `i` of frame set `set` at `v`: focal-point cover, plus a slow eased camera
+ * Screen rect for clip `i` at `v`: focal-point cover, plus a slow eased camera
  * push-in (×1.00 → ×1.06) with a slight upward drift (0 → −1.5% of height),
  * scaled around the clip's focal point. `scale` is screen px per frame px.
  */
-export function clipRect(tl: Timeline, set: FrameSet, i: number, v: number, cw: number, ch: number, push = 1) {
-  const focalX = set.focalX[i];
-  const r = coverRect(cw, ch, focalX, set.w, set.h);
+export function clipRect(tl: Timeline, i: number, v: number, cw: number, ch: number, push = 1) {
+  const r = coverRect(cw, ch, CLIPS[i].focalX);
   const e = tl.reduced ? 0 : easeInOutCubic(clipProgress(tl, i, v));
   const s = (1 + 0.06 * e) * push;
-  const fx = r.x + focalX * r.w;
+  const fx = r.x + CLIPS[i].focalX * r.w;
   const fy = ch / 2;
   return {
     x: fx - (fx - r.x) * s,
