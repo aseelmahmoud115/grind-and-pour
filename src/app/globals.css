@@ -227,10 +227,11 @@ body {
     & .cup {
       grid-area: cup;
     }
+    /* Side cards: stretched to the row's height, so both share one top edge, centred on the cup. */
     & .card-a {
       grid-area: a;
       justify-self: end;
-      margin-top: -6rem;
+      align-self: stretch;
     }
     & .card-b {
       grid-area: b;
@@ -240,7 +241,7 @@ body {
     & .card-c {
       grid-area: c;
       justify-self: start;
-      margin-top: 8rem;
+      align-self: stretch;
     }
   }
 }
