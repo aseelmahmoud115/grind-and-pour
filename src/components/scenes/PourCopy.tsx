@@ -20,23 +20,23 @@ export function PourCopy() {
             <Eyebrow>03 — Bloom &amp; pour</Eyebrow>
           </Reveal>
           <Drift value={film} range={pour(0, 1)} reduced={reduced}>
-            <h2 id="pour-title" className="display mt-4 text-espresso">
+            <h2 id="pour-title" className="display mt-4 text-espresso phone:mt-2">
               <MaskLine value={film} inAt={pour(0.1, 0.26)} outAt={pour(0.8, 0.92)} reduced={reduced}>
                 Pour
               </MaskLine>
             </h2>
           </Drift>
           <Reveal value={film} inAt={pour(0.1, 0.26, SUPPORT_DELAY)} outAt={pour(0.82, 0.94)} reduced={reduced}>
-            <p className="body-copy mt-6">
+            <p className="body-copy mt-6 phone:mt-3">
               Heat water to 92–96 °C. Pour 30 g first and let the coffee bloom for 30–40 seconds. Then pour slowly
               in small spirals until you reach 250 g.
             </p>
-            <ul className="mt-7 flex flex-wrap gap-2" aria-label="Recipe at a glance">
+            <ul className="mt-7 flex flex-wrap gap-2 phone:mt-3 phone:gap-1.5" aria-label="Recipe at a glance">
               {STATS.map((stat, i) => (
                 <li key={stat}>
                   {/* One by one, tied to scroll — no timers. */}
                   <Reveal value={film} inAt={pour(0.34, 0.4, i * 0.06)} reduced={reduced} rise={16}>
-                    <span className="inline-flex h-10 items-center rounded-full border border-espresso/15 bg-cream-light/90 px-4 text-sm font-medium whitespace-nowrap text-espresso">
+                    <span className="inline-flex h-10 items-center rounded-full border border-espresso/15 bg-cream-light/90 px-4 text-sm font-medium whitespace-nowrap text-espresso phone:h-8 phone:px-3 phone:text-[13px]">
                       {stat}
                     </span>
                   </Reveal>

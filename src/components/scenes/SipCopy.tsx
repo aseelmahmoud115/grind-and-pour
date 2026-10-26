@@ -19,14 +19,14 @@ export function SipCopy() {
             <Eyebrow>04 — Sip</Eyebrow>
           </Reveal>
           <Drift value={film} range={sip(0, 1.19)} reduced={reduced}>
-            <h2 id="sip-title" className="display mt-4 text-espresso">
+            <h2 id="sip-title" className="display mt-4 text-espresso phone:mt-2">
               <MaskLine value={film} inAt={sip(0.12, 0.28)} outAt={sip(1, 1.14)} reduced={reduced}>
                 Sip
               </MaskLine>
             </h2>
           </Drift>
           <Reveal value={film} inAt={sip(0.12, 0.28, SUPPORT_DELAY)} outAt={sip(1.02, 1.16)} reduced={reduced}>
-            <p className="body-copy mt-6">
+            <p className="body-copy mt-6 phone:mt-3">
               Total brew time: 2:30 to 3:30. Swirl the server, let it cool for a minute, and taste. Too bitter?
               Grind coarser. Too sour? Grind finer.
             </p>

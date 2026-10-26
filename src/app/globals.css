@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Portrait phones: the film's phone layout (keep in sync with MOBILE_QUERY in lib/frames.ts). */
+@custom-variant phone (@media (max-width: 767px) and (orientation: portrait));
+
 :root {
   /* Navbar height; measured at runtime by <Navbar> (ResizeObserver). This is the first-paint fallback. */
   --nav-h: 72px;
@@ -10,6 +13,10 @@
   --terracotta: #b4572f;
   --sage: #93a88a;
   --sky: #a7c4e2;
+  /* Phone film frame (576 × 564) drawn at the viewport's width, centred at 40% of the stage. */
+  --film-frame-h: calc(100vw * 564 / 576);
+  /* Its lowest bottom edge: half its height at the strongest push (×1.03, ×1.02 more in a crossfade). */
+  --film-bottom: calc(40dvh + var(--film-frame-h) * 0.53);
 }
 
 @theme inline {
@@ -70,6 +77,10 @@ body {
   @media (max-height: 759px) {
     font-size: min(14vw, 17vh);
   }
+  /* Phones: one line under the film frame, sized so each scene fits down to 360 × 740. */
+  @variant phone {
+    font-size: min(13vw, 6.4dvh);
+  }
 }
 
 @utility eyebrow {
@@ -89,6 +100,10 @@ body {
   @media (min-width: 1024px) {
     max-width: min(30rem, 34vw);
     font-size: 1.125rem;
+  }
+  @variant phone {
+    font-size: 0.9375rem;
+    line-height: 1.5;
   }
 }
 
@@ -117,6 +132,28 @@ body {
   @media (max-height: 520px) {
     padding-bottom: 1.25rem;
   }
+  /* Phones: on plain cream below the film frame. */
+  @variant phone {
+    justify-content: flex-start;
+    padding-top: calc(var(--film-bottom) + 0.5rem);
+    padding-bottom: 1rem;
+  }
+}
+
+/*
+ * Phones: the film stage's poster is clip 1's first phone frame, placed exactly like
+ * the canvas draws it (full width, centred at 40%, edges fading into the cream).
+ * !important beats the desktop poster set inline on the stage.
+ */
+@utility film-stage {
+  @variant phone {
+    background-image:
+      linear-gradient(to bottom, var(--cream), rgb(234 216 191 / 0) 12%, rgb(234 216 191 / 0) 88%, var(--cream)),
+      url(/frames/v3/mobile/1-grind/0001.webp) !important;
+    background-size: 100% var(--film-frame-h) !important;
+    background-position: center calc(40dvh - var(--film-frame-h) / 2) !important;
+    background-repeat: no-repeat;
+  }
 }
 
 @utility scene-copy-top {
@@ -127,6 +164,10 @@ body {
 
 /* Soft cream scrims behind the text column (never a box). */
 @utility scrim {
+  /* Phones: the copy sits on plain cream below the frame, so no scrim. */
+  @variant phone {
+    display: none;
+  }
   background: linear-gradient(
     to top,
     rgb(234 216 191 / 0.95) 0%,
@@ -146,6 +187,9 @@ body {
 
 /* Sip: the wave crosses the text column, so the scrim has to carry more. */
 @utility scrim-strong {
+  @variant phone {
+    display: none;
+  }
   background: linear-gradient(
     to top,
     rgb(234 216 191 / 0.97) 0%,

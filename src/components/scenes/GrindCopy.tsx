@@ -90,7 +90,7 @@ export function GrindCopy() {
           </Reveal>
           {/* The hero is already in on arrival, so its drift is centred there (0 → +3vw as it leaves). */}
           <Drift value={film} range={grind(-1, 1)} reduced={reduced}>
-            <h1 id="grind-title" className="display mt-4 text-espresso">
+            <h1 id="grind-title" className="display mt-4 text-espresso phone:mt-2 phone:flex phone:flex-wrap phone:gap-x-[0.2em]">
               <MaskLine value={film} outAt={grind(0.6, 0.76)} reduced={reduced}>
                 Grind
               </MaskLine>
@@ -100,11 +100,11 @@ export function GrindCopy() {
             </h1>
           </Drift>
           <Reveal value={film} outAt={grind(0.62, 0.78, SUPPORT_DELAY)} reduced={reduced}>
-            <p className="body-copy mt-6">
+            <p className="body-copy mt-6 phone:mt-3">
               Start with 15 g of freshly roasted whole beans. Grind them medium-fine, like coarse sea salt, right
               before you brew.
             </p>
-            <div className="mt-8 flex items-center gap-3">
+            <div className="mt-8 flex items-center gap-3 phone:mt-4">
               <PillLink href="#dial-in">Start brewing</PillLink>
               <CircleArrowLink href="#dial-in" label="Scroll to the next step" />
             </div>
@@ -119,7 +119,7 @@ export function GrindCopy() {
             <Eyebrow>02 — Dial in</Eyebrow>
           </Reveal>
           <Drift value={film} range={dial(0, 1)} reduced={reduced}>
-            <h2 id="dial-in-title" className="display mt-4 flex flex-wrap gap-x-[0.25em] text-espresso lg:block">
+            <h2 id="dial-in-title" className="display mt-4 flex flex-wrap gap-x-[0.25em] text-espresso phone:mt-2 lg:block">
               <MaskLine value={film} inAt={dial(0.12, 0.28)} outAt={dial(0.8, 0.92)} reduced={reduced}>
                 Dial
               </MaskLine>
@@ -129,7 +129,7 @@ export function GrindCopy() {
             </h2>
           </Drift>
           <Reveal value={film} inAt={dial(0.12, 0.28, SUPPORT_DELAY)} outAt={dial(0.82, 0.94)} reduced={reduced}>
-            <p className="body-copy mt-6">
+            <p className="body-copy mt-6 phone:mt-3">
               Steel burrs crush the beans evenly, so every particle extracts at the same pace. Go finer for a
               stronger, heavier cup; go coarser for a brighter, lighter one.
             </p>

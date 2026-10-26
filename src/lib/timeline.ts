@@ -1,4 +1,4 @@
-import { FRAME_COUNT, coverRect } from "./frames";
+import { FRAME_COUNT, coverRect, fitWidthRect } from "./frames";
 
 /**
  * The film: four clips played back to back on one pinned stage. All positions
@@ -70,16 +70,26 @@ export function clipProgress(tl: Timeline, i: number, v: number) {
   return clamp01((v - from) / (to - from));
 }
 
-/** Float frame position (0-based, not rounded) of clip `i` at timeline position `v`. */
-export function frameAt(tl: Timeline, i: number, v: number) {
-  return tl.reduced ? CLIPS[i].still - 1 : clipProgress(tl, i, v) * (FRAME_COUNT - 1);
+/**
+ * Float frame position (0-based, not rounded) of clip `i` at timeline position `v`.
+ * `count` is the clip's frame count (192 on desktop, 120 for the phone frames).
+ */
+export function frameAt(tl: Timeline, i: number, v: number, count = FRAME_COUNT) {
+  if (tl.reduced) return Math.round(((CLIPS[i].still - 1) * (count - 1)) / (FRAME_COUNT - 1));
+  return clipProgress(tl, i, v) * (count - 1);
+}
+
+/** Timeline position (vh) where clip `i` shows frame `frame` of `count`. */
+export function frameVh(tl: Timeline, i: number, frame: number, count = FRAME_COUNT) {
+  const { from, to } = tl.spans[i];
+  return from + (frame / (count - 1)) * (to - from);
 }
 
 /** Frames advanced per vh of scroll at `v` (the fastest of the clips playing there). */
-export function framesPerVh(tl: Timeline, v: number) {
+export function framesPerVh(tl: Timeline, v: number, count = FRAME_COUNT) {
   let rate = 0;
   for (const { from, to } of tl.spans) {
-    if (v >= from && v <= to) rate = Math.max(rate, (FRAME_COUNT - 1) / (to - from));
+    if (v >= from && v <= to) rate = Math.max(rate, (count - 1) / (to - from));
   }
   return rate;
 }
@@ -87,7 +97,7 @@ export function framesPerVh(tl: Timeline, v: number) {
 export type Layer = { clip: number; frame: number; alpha: number; push: number };
 
 /** What to draw at `v`: one clip, or two while crossfading, plus the closing fade to cream. */
-export function layersAt(tl: Timeline, v: number): { layers: Layer[]; fade: number } {
+export function layersAt(tl: Timeline, v: number, count = FRAME_COUNT): { layers: Layer[]; fade: number } {
   const n = CLIPS.length;
   const half = tl.crossfade / 2;
   const fade = smoothstep((v - tl.segments[n - 1].end) / tl.fadeOut);
@@ -99,8 +109,8 @@ export function layersAt(tl: Timeline, v: number): { layers: Layer[]; fade: numb
       return {
         layers: [
           // The outgoing clip pushes through (×1.00 → ×1.04) while the next one fades in over it.
-          { clip: i, frame: frameAt(tl, i, v), alpha: 1, push: tl.reduced ? 1 : 1 + 0.04 * t },
-          { clip: i + 1, frame: frameAt(tl, i + 1, v), alpha: t, push: 1 },
+          { clip: i, frame: frameAt(tl, i, v, count), alpha: 1, push: tl.reduced ? 1 : 1 + 0.04 * t },
+          { clip: i + 1, frame: frameAt(tl, i + 1, v, count), alpha: t, push: 1 },
         ],
         fade,
       };
@@ -108,7 +118,7 @@ export function layersAt(tl: Timeline, v: number): { layers: Layer[]; fade: numb
   }
   const index = tl.segments.findIndex((s) => v < s.end);
   const clip = index === -1 ? n - 1 : index;
-  return { layers: [{ clip, frame: frameAt(tl, clip, v), alpha: 1, push: 1 }], fade };
+  return { layers: [{ clip, frame: frameAt(tl, clip, v, count), alpha: 1, push: 1 }], fade };
 }
 
 /**
@@ -122,6 +132,26 @@ export function clipRect(tl: Timeline, i: number, v: number, cw: number, ch: num
   const s = (1 + 0.06 * e) * push;
   const fx = r.x + CLIPS[i].focalX * r.w;
   const fy = ch / 2;
+  return {
+    x: fx - (fx - r.x) * s,
+    y: fy - (fy - r.y) * s - 0.015 * ch * e,
+    w: r.w * s,
+    h: r.h * s,
+    scale: r.scale * s,
+  };
+}
+
+/**
+ * Phone version of clipRect: the frame at the stage's full width (centred at 40% of
+ * its height, on cream), with the same eased camera push and drift at half strength
+ * (×1.00 → ×1.03), scaled around the frame's centre.
+ */
+export function mobileRect(tl: Timeline, i: number, v: number, cw: number, ch: number, push = 1) {
+  const r = fitWidthRect(cw, ch);
+  const e = (tl.reduced ? 0 : easeInOutCubic(clipProgress(tl, i, v))) / 2;
+  const s = (1 + 0.06 * e) * (1 + (push - 1) / 2);
+  const fx = r.x + r.w / 2;
+  const fy = r.y + r.h / 2;
   return {
     x: fx - (fx - r.x) * s,
     y: fy - (fy - r.y) * s - 0.015 * ch * e,

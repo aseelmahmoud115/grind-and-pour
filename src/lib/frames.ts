@@ -6,6 +6,29 @@ export function frameUrl(dir: string, index: number) {
   return `/frames/${dir}/${String(index + 1).padStart(4, "0")}.webp`;
 }
 
+/*
+ * Portrait phones (MOBILE_QUERY) use their own frames: 576 × 564 crops centred on
+ * each clip's subject (focal point 0.5), 120 per clip (15 fps), drawn at the
+ * viewport's width on cream instead of covering the screen.
+ */
+export const MOBILE_QUERY = "(max-width: 767px) and (orientation: portrait)";
+export const MOBILE_FRAME_COUNT = 120;
+export const MOBILE_FRAME_W = 576;
+export const MOBILE_FRAME_H = 564;
+/** Vertical centre of the phone frame, as a fraction of the stage height (below the navbar). */
+export const MOBILE_CENTER_Y = 0.4;
+
+export function mobileFrameUrl(dir: string, index: number) {
+  return `/frames/v3/mobile/${dir}/${String(index + 1).padStart(4, "0")}.webp`;
+}
+
+/** Phone placement: the frame spans the box's width, its centre at MOBILE_CENTER_Y of the box height. */
+export function fitWidthRect(cw: number, ch: number) {
+  const scale = cw / MOBILE_FRAME_W;
+  const h = MOBILE_FRAME_H * scale;
+  return { x: 0, y: MOBILE_CENTER_Y * ch - h / 2, w: cw, h, scale };
+}
+
 /**
  * "Cover" placement with a horizontal focal point: the frame fills the box,
  * and focalX is pulled as close to the box's center as possible without
