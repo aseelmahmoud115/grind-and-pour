@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { COUNTRIES, DEMO_CARD_MESSAGE, TEST_CARD } from "./format";
+
+export const COUNTRIES = ["Egypt", "Palestine", "Jordan", "Saudi Arabia", "UAE", "Other"] as const;
 
 export const shippingSchema = z.object({
   email: z.email("Enter a valid email address, like name@example.com."),
@@ -14,6 +15,10 @@ export const shippingSchema = z.object({
   postalCode: z.string().trim().max(12, "Postal codes are 12 characters or fewer.").optional(),
 });
 export type ShippingValues = z.infer<typeof shippingSchema>;
+
+/** The only card the demo accepts. */
+export const TEST_CARD = "4242424242424242";
+export const DEMO_CARD_MESSAGE = "This is a demo store: please use the test card 4242 4242 4242 4242.";
 
 function expiryInFuture(value: string) {
   const m = /^(\d{2})\/(\d{2})$/.exec(value);
@@ -33,3 +38,17 @@ export const cardSchema = z.object({
   demoCvc: z.string().regex(/^\d{3}$/, "Enter any 3-digit CVC."),
 });
 export type CardValues = z.infer<typeof cardSchema>;
+export const EMPTY_CARD: CardValues = { demoNumber: "", demoName: "", demoExpiry: "", demoCvc: "" };
+
+/** "4242424242424242" → "4242 4242 4242 4242" while typing. */
+export const spaceCardNumber = (raw: string) =>
+  raw
+    .replace(/\D/g, "")
+    .slice(0, 16)
+    .replace(/(\d{4})(?=\d)/g, "$1 ");
+
+/** "1229" → "12/29" while typing. */
+export const formatExpiry = (raw: string) => {
+  const digits = raw.replace(/\D/g, "").slice(0, 4);
+  return digits.length > 2 ? `${digits.slice(0, 2)}/${digits.slice(2)}` : digits;
+};

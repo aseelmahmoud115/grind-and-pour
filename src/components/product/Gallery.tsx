@@ -3,13 +3,10 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
-import { LazySteam } from "@/components/shop/LazySteam";
+import { SteamCanvas } from "@/components/shop/SteamCanvas";
 import { useCircleWipe } from "@/components/shop/useCircleWipe";
 import { DEFAULT_STEAM_AT } from "@/lib/catalog";
 import { usePrefersReducedMotion } from "@/lib/hooks";
-
-/** Half of the max-w-7xl, px-14 grid (less the 4rem gap) from lg; the padded page width below. */
-const GALLERY_SIZES = "(min-width: 1392px) 38rem, (min-width: 1024px) calc(50vw - 5.5rem), (min-width: 640px) calc(100vw - 4rem), calc(100vw - 2.5rem)";
 
 /**
  * Main image (a swipeable scroll-snap strip with thumbnails when there are several
@@ -72,7 +69,7 @@ export function Gallery({
                 alt={i === 0 ? `${name} coffee bag` : `${name}, photo ${i + 1} of ${images.length}`}
                 fill
                 priority={i === 0}
-                sizes={GALLERY_SIZES}
+                sizes="(min-width: 1024px) 45vw, 100vw"
                 className="object-cover"
               />
             </div>
@@ -88,8 +85,8 @@ export function Gallery({
           transition={{ duration: 0.2 }}
           aria-hidden={!inCup}
         >
-          <Image src={cupImage} alt={`${name}, brewed and served in a cup`} fill sizes={GALLERY_SIZES} className="object-cover object-center" />
-          <LazySteam active={inCup && !reduced} at={steamAt} rimWidth={rimWidth} />
+          <Image src={cupImage} alt={`${name}, brewed and served in a cup`} fill sizes="(min-width: 1024px) 45vw, 100vw" className="object-cover object-center" />
+          <SteamCanvas active={inCup && !reduced} at={steamAt} rimWidth={rimWidth} />
         </motion.div>
       </div>
 

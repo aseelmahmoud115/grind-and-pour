@@ -207,7 +207,7 @@ async function ProductDetails({ params }: { params: PageProps<"/product/[slug]">
             trackClassName="-mx-2 scroll-px-2 px-2 pt-2 pb-8"
           >
             {related.map((p) => (
-              <ProductCard key={p.slug} product={p} sizes="(min-width: 1392px) 17.8rem, (min-width: 1024px) calc(25vw - 4rem), (min-width: 768px) calc(45vw - 3.3rem), (min-width: 640px) calc(80vw - 4.7rem), calc(80vw - 3.2rem)" />
+              <ProductCard key={p.slug} product={p} sizes="(min-width: 1024px) 22vw, (min-width: 768px) 45vw, 80vw" />
             ))}
           </Carousel>
         </section>
