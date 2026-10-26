@@ -74,7 +74,6 @@ The briefs this site was built from, in order:
 3. [ECOMMERCE.md](docs/ECOMMERCE.md): the demo coffee store (shop, product pages, cart, checkout)
 4. [CARDS-UPGRADE.md](docs/CARDS-UPGRADE.md): carousel fixes and the "Brew Reveal" card interaction
 5. [FOOTER-STEAM.md](docs/FOOTER-STEAM.md): store footer update and living steam
-6. [PERFORMANCE.md](docs/PERFORMANCE.md): lighter film frames, a sliding-window frame loader and a lighter page
 
 ## Credits
 
